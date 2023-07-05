@@ -59,19 +59,10 @@ func removeByIdx(idx int, minHeap MinBinHeap) MinBinHeap {
 	for {
 		//bubble up
 		// not needed for poll but oh well
-		toEven := curIdx % 2
 
-		parentIdx := ((curIdx + toEven) / 2) - 1
+		upShifted := handleShiftUp(&curIdx, &minHeap)
 
-		parentVal := minHeap[0]
-
-		if parentIdx > 0 {
-			parentVal = minHeap[parentIdx]
-		}
-
-		if parentVal > minHeap[curIdx] {
-			minHeap[parentIdx], minHeap[curIdx] = minHeap[curIdx], minHeap[parentIdx]
-			curIdx = parentIdx
+		if upShifted == true {
 			continue
 		}
 
@@ -100,6 +91,29 @@ func removeByIdx(idx int, minHeap MinBinHeap) MinBinHeap {
 	}
 
 	return minHeap
+}
+
+func handleShiftUp(idx *int, heapRef *MinBinHeap) bool {
+	minHeap := *heapRef
+	curIdx := *idx
+
+	toEven := curIdx % 2
+
+	parentIdx := ((curIdx + toEven) / 2) - 1
+
+	parentVal := minHeap[0]
+
+	if parentIdx > 0 {
+		parentVal = minHeap[parentIdx]
+	}
+
+	if parentVal > minHeap[curIdx] {
+		minHeap[parentIdx], minHeap[curIdx] = minHeap[curIdx], minHeap[parentIdx]
+		*heapRef = minHeap
+		*idx = parentIdx
+		return true
+	}
+	return false
 }
 
 func (minBinHeap *MinBinHeap) Insert(num int) {
