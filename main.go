@@ -67,30 +67,47 @@ func removeByIdx(idx int, minHeap MinBinHeap) MinBinHeap {
 		}
 
 		//bubble down
-		if curIdx*2+2 < len(minHeap) {
-			lChildIdx := (curIdx * 2) + 1
-			rChildIdx := (curIdx * 2) + 2
+		downShifted := handleShiftDown(&curIdx, &minHeap)
 
-			lChildVal := minHeap[lChildIdx]
-			rChildVal := minHeap[rChildIdx]
-
-			lesserIdx := lChildIdx
-
-			if rChildVal < lChildVal {
-				lesserIdx = rChildIdx
-			}
-
-			if minHeap[curIdx] > minHeap[lesserIdx] {
-				minHeap[curIdx], minHeap[lesserIdx] = minHeap[lesserIdx], minHeap[curIdx]
-				curIdx = lesserIdx
-				continue
-			}
+		if downShifted == true {
+			continue
 		}
 
 		break
 	}
 
 	return minHeap
+}
+
+func handleShiftDown(idx *int, heapRef *MinBinHeap) bool {
+	minHeap := *heapRef
+	curIdx := *idx
+
+	// no children in range
+	if curIdx*2+2 >= len(minHeap) {
+		return false
+	}
+
+	lChildIdx := (curIdx * 2) + 1
+	rChildIdx := (curIdx * 2) + 2
+
+	lChildVal := minHeap[lChildIdx]
+	rChildVal := minHeap[rChildIdx]
+
+	lesserIdx := lChildIdx
+
+	if rChildVal < lChildVal {
+		lesserIdx = rChildIdx
+	}
+
+	if minHeap[curIdx] > minHeap[lesserIdx] {
+		minHeap[curIdx], minHeap[lesserIdx] = minHeap[lesserIdx], minHeap[curIdx]
+		*heapRef = minHeap
+		*idx = lesserIdx
+		return true
+	}
+
+	return false
 }
 
 func handleShiftUp(idx *int, heapRef *MinBinHeap) bool {
@@ -101,6 +118,7 @@ func handleShiftUp(idx *int, heapRef *MinBinHeap) bool {
 
 	parentIdx := ((curIdx + toEven) / 2) - 1
 
+	// set and if not 0 to handle parentIdx < 0
 	parentVal := minHeap[0]
 
 	if parentIdx > 0 {
